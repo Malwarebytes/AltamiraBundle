@@ -14,6 +14,8 @@ class ChartFactory {
     function __construct($library,$logger) {
         $this->logger=$logger;
         $this->setLibrary($library);
+
+        \Altamira\Config::setConfigFile(__DIR__.'/Resources/config/altamira-config.ini');
     }
 
 
@@ -21,7 +23,7 @@ class ChartFactory {
         $this->logger->debug("Altamira library set to ".$library."!");
         $this->library=$library;
 
-        if ($library == 'flot') {
+        if ($library == \Altamira\JsWriter\Flot::LIBRARY) {
             ChartRenderer::pushRenderer( '\Altamira\ChartRenderer\DefaultRenderer' );
             ChartRenderer::pushRenderer( '\Altamira\ChartRenderer\TitleRenderer' );
         }
@@ -34,16 +36,7 @@ class ChartFactory {
 
 
     public function getChartIterator(array $charts) {
-        //@todo: this supports config file, find a sensible place for it and symfonify it
-        $config = new \Altamira\Config();
-        
-        $config['js.path'] = 'js/';
-        $config['js.pluginpath'] = 'js/plugins/';
-        $config['js.flotpath'] = 'js/jquery.flot.js';
-        $config['js.jqplotpath'] = 'js/jquery.jqplot.js';
-        $config['css.jqplotpath'] = 'css/jqplot.css';
-        
-        return new ChartIterator($charts, $config);
+        return new ChartIterator($charts);
     }
 }
 ?>

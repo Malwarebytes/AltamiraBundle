@@ -4,57 +4,96 @@ About
 
 A PHP abstraction library for JavaScript charting built as a Symfony 2 service bundle.
 
+The following libraries are linked to this bundle via git submodules:
 
-The following libraries are currently bundled with this Symfony bundle, feel free to update
-the libraries yourself - they reside in Resources/public/js.
+* Jquery
+* Flot
+* jqPlot
 
-* Jquery 1.6.4
-* Flot 0.7
-* jqPlot 1.0.0 revision 1095
+You can jump to any version by checking out the version you want to use via the git submodule.
 
 
 Getting Started
 ===================
 
-You need a working Symfony2 framework installed and setup. From your main symfony2 directory, run:
+* Prerequisites: You need a working Symfony2 framework installed and setup. 
 
+**IMPORTANT - Please follow the directions in order or the JS library dependencies will not be properly built**
 
+1. Add the AltamiraBundle ScriptHandler to the ```post-install-cmd``` and ```post-update-cmd``` section in scripts in your composer.json file.
+    
+    ```yaml
+        "scripts": {
+            "post-install-cmd": [
+                "Malwarebytes\\AltamiraBundle\\ScriptHandler::installJSDependencies",
+                "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+                "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+                "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+                "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
+    
+            ],
+            "post-update-cmd": [
+                "Malwarebytes\\AltamiraBundle\\ScriptHandler::installJSDependencies",
+                "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+                "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+                "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+                "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
+            ]
+        }
+    ```
+    
+    **NOTE** You must add our bundle first before installAssets or you will have to re-run install assets manually.
+    
+    
+2. Now install the altamira-bundle via composer.
+    
+    
+    From your main symfony2 directory, run:
+    
+    ``` bash
+    $ composer require malwarebytes/altamirabundle:dev-master
+    ```
+    
+    
+3. Enable the bundle within symfony:
+    
+    ``` php
+    <?php
+    // app/AppKernel.php
+    
+    public function registerBundles()
+    {
+         $bundlles = array (
+             // ...
+             new Malwarebytes\AltamiraBundle\MalwarebytesAltamiraBundle(),
+         );
+    }
+    ```
+    
+    
+    
+4. If you would like to see example code, enable the example controller:
+    
+    ``` yml
+    # app/config/routing.yml
+    
+    altamira_example:
+        resource: "@MalwarebytesAltamiraBundle/Resources/config/routing.yml"
+        prefix:   /chart_demo
+    ```
 
-``` bash
-$ composer require malwarebytes/altamirabundle:dev-master
-```
+Troubleshooting
+==================
 
+If there are javascript files missing when you view the example, the JS dependencies may not have been fetched properly. Check that the folders in ```Resources/public/js/``` are not empty.
 
-Enable the bundle:
+If code exists in the libs folder, the assets may have failed to be installed into the web folder. Run the following to regenerate the assets:
 
-``` php
-<?php
-// app/AppKernel.php
-
-public function registerBundles()
-{
-     $bundlles = array (
-         // ...
-         new Malwarebytes\AltamiraBundle\MalwarebytesAltamiraBundle(),
-     );
-}
-```
-
-Lastly, install the assets:
 
 ```bash
 $ app/console assets:install
 ```
 
-If you would like to see example code, enable the example controller:
-
-``` yml
-# app/config/routing.yml
-
-altamira_example:
-    resource: "@MalwarebytesAltamiraBundle/Resources/config/routing.yml"
-    prefix:   /chart_demo
-```
 
 Developing
 ===================

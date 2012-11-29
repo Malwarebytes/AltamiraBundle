@@ -1,0 +1,9 @@
+[submodule "Resources/libs/flot"]
+	path = Resources/libs/flot
+	url = git://github.com/flot/flot.git
+[submodule "Resources/libs/jqplot"]
+	path = Resources/libs/jqplot
+	url = git://github.com/jonmchan/jqplot.git
+[submodule "Resources/libs/flot-bubbles"]
+	path = Resources/libs/flot-bubbles
+	url = git://github.com/ubermajestix/flot-plugins.git
