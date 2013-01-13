@@ -103,8 +103,7 @@ class ExampleController extends Controller
         $charts[3]->setTitle('Horizontal Bar Chart')->
             addSeries($charts[3]->createSeries(TwoDimensionalPointFactory::getFromXValues( array(1, 4, 8, 2, 1, 5) ), 'Runs'))->
             addSeries($charts[3]->createSeries(TwoDimensionalPointFactory::getFromXValues( array(3, 3, 5, 4, 2, 6) ), 'Walks'))->
-            setType('Bar')->
-            setTypeOption('horizontal', true)->
+            setType('Bar', array('horizontal' => true))->
             setAxisTicks('y', array('1st Inning', '2nd Inning', '3rd Inning', '4th Inning', '5th Inning', '6th Inning'))->
             setLegend(array('on'=>true, 'location'=>'se', 'x'=>5, 'y'=>5));
         
@@ -121,10 +120,8 @@ class ExampleController extends Controller
         
         $charts[5]->setTitle('Donut Chart With Custom Colors And Labels')->
             setSeriesColors(array('#dd3333', '#d465f1', '#aa2211', '#3377aa', '#6699bb', '#9933aa'))->
-            setType('Donut')->
-            setLegend()->
-            setTypeOption('sliceMargin', 3)->
-            setTypeOption('showDataLabels', true);
+            setType('Donut', array('sliceMargin' => 3, 'showDataLabels' => true))->
+            setLegend();
         
             if ( $library == \Altamira\JsWriter\Flot::LIBRARY ) {
             $charts[5]->addSeries($charts[5]->createManySeries( $chart6Many1, $nestedFactoryMethod, 'Internal' ) );
@@ -136,10 +133,8 @@ class ExampleController extends Controller
                 ->addSeries( $charts[8]->createManySeries($chart6Many2, $nestedFactoryMethod, 'External' ) )
                 ->setTitle('Donut Chart With Custom Colors And Labels')
                 ->setSeriesColors(array('#dd3333', '#d465f1', '#aa2211', '#3377aa', '#6699bb', '#9933aa'))
-                ->setType('Donut')
-                ->setLegend()
-                ->setTypeOption('sliceMargin', 3)
-                ->setTypeOption('showDataLabels', true);
+                ->setType('Donut', array('sliceMargin'=>3, 'showDataLabels'=>true))
+                ->setLegend();
         } else {
             $charts[5]
                 ->addSeries($charts[5]->createManySeries($chart6Many1, $nestedFactoryMethod, 'Internal'))
@@ -157,9 +152,7 @@ class ExampleController extends Controller
             array('Pliers', 4, 1, 5),
             array('Hammers', 4.5, 6, 6)), $bubbleFactoryMethod, 'Bubble'))->
         setTitle('Bubble Chart')->
-        setType('Bubble')->
-        setTypeOption('bubbleAlpha', .5)->
-        setTypeOption('highlightAlpha', .7)
+        setType('Bubble', array('bubbleAlpha' => .5, 'highlightAlpha' => .7))
         ->setAxisOptions( 'x', 'min', 2)
         ->setAxisOptions( 'x', 'max', 6)
         ->setAxisOptions( 'y', 'min', -2)
@@ -180,12 +173,16 @@ class ExampleController extends Controller
         $charts[7]->setTitle('Vertical Stack Chart')->
             addSeries($charts[7]->createSeries(TwoDimensionalPointFactory::getFromYValues( $array1 ), 'Is'))->
             addSeries($charts[7]->createSeries(TwoDimensionalPointFactory::getFromYValues( $array2 ), 'Is Not'))->
-            setType('Bar')->
+            setType('Bar', array('stackSeries'=>true))->
             setLegend(array('on'=>true, 'location'=>'se', 'x'=>5, 'y'=>5))->
-            setAxisOptions('y', 'max', 100)->
-            setTypeOption('stackSeries', true);
+            setAxisOptions('y', 'max', 100);
         
-
+        if ( $library == \Altamira\JsWriter\JqPlot::LIBRARY ) {
+            foreach ( $charts[7]->getSeries() as $series )
+            {
+                $series->useLabels();
+            }
+        }
 
         $chartIterator = $chartsFactory->getChartIterator($charts);
 
