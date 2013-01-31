@@ -7,3 +7,9 @@
 [submodule "Resources/libs/flot-bubbles"]
 	path = Resources/libs/flot-bubbles
 	url = git://github.com/ubermajestix/flot-plugins.git
+[submodule "Resources/libs/nvd3"]
+	path = Resources/libs/nvd3
+	url = git://github.com/novus/nvd3.git
+[submodule "Resources/libs/d3"]
+	path = Resources/libs/d3
+	url = git://github.com/mbostock/d3.git
