@@ -34,6 +34,120 @@ class ExampleController extends Controller
         return $this->sampleChartGenerator("jqPlot");
     }
 
+    public function d3Action() 
+    {
+    	   return $this->d3SampleGenerator();
+    }
+
+    protected function d3SampleGenerator()
+    {
+		$chartsFactory = $this->get('charts_factory');
+		$chartsFactory->setLibrary( 'd3' );
+		
+		\Altamira\ChartRenderer::pushRenderer( '\Altamira\ChartRenderer\SVGRenderer' );
+		\Altamira\ChartRenderer::pushRenderer( '\Altamira\ChartRenderer\DefaultRenderer' );
+		
+		$charts = array();
+		
+		$chart = $chartsFactory->createChart('chart1');
+		$chart->addSeries( $chart->createSeries( \Altamira\ChartDatum\TwoDimensionalPointFactory::getFromXValues( array( 1, 2, 3, 4, 5 ) ), 'Series A' ) );
+		$charts[] = $chart;
+		
+		$points = array( 'golf clubs' => 1, 'golf shoes' => 5, 'holes' => 18, 'strokes' => 32 );
+		$chart = $chartsFactory->createChart('chart2');
+		$chart->setType( 'Pie' );
+		$data = \Altamira\ChartDatum\ScalarValueFactory::getFromAssociativeArray( $points );
+		$chart->addSeries( $chart->createSeries( $data ) );
+		$charts[] = $chart;
+		
+		$nested = array( array( 45, 'cool' ), array( 25, 'cold' ), array( '60', 'temperate' ), array( '75', 'warm' ), array( '90', 'hot' ) );
+		$chart = $chartsFactory->createChart('chart3');
+		$chart->setType( 'Donut' );
+		$chart->addSeries( $chart->createSeries( \Altamira\ChartDatum\ScalarValueFactory::getFromNestedArray( $nested ) ) );
+		$charts[] = $chart;
+		
+		$tuples = array( 
+	        array('Screws', 4, 7, 5),
+	        array('Nails', 5, 3, 6),
+	        array('Bolts', 4, 5, 7),
+	        array('Nuts', 3, 4, 6),
+	        array('Washers', 3, 2, 5),
+	        array('Pliers', 4, 1, 5),
+	        array('Hammers', 4, 6, 6)
+        );
+		$chart = $chartsFactory->createChart('chart4');
+		$chart->addSeries( $chart->createManySeries( $tuples, array( '\Altamira\ChartDatum\BubbleFactory', 'getBubbleDatumFromTupleSet' ) ) );
+		$chart->setType( 'Bubble' );
+		$charts[] = $chart;
+
+		$chart = $chartsFactory->createChart('chart5');
+		$array1 = array( 'A'=>1, 'B'=>4, 'C'=>8, 'D'=>2, 'E'=>1, 'F'=>5);
+		$array2 = array( 'A'=>6, 'B'=>3, 'C'=>2, 'D'=>8, 'E'=>9, 'F'=>4);
+		$series1 = $chart->createSeries( \Altamira\ChartDatum\ScalarValueFactory::getFromAssociativeArray( $array1 ), 'Runs');
+		$series2 = $chart->createSeries( \Altamira\ChartDatum\ScalarValueFactory::getFromAssociativeArray( $array2 ), 'Walks');
+		$series1->setFill( array( 'color' => '#22dd22' ) );
+		$series2->setFill( array( 'color' => '#dd2222' ) );
+		$chart->setTitle('Horizontal Bar Chart')->
+		    addSeries( $series1 )->
+		    addSeries( $series2 )->
+		    setType('Bar', array( 'horizontal' => true ) );
+		$charts[] = $chart;
+		
+		$array1 = array(1, 4, 8, 2, 1, 5);
+		$array2 = array(3, 3, 5, 4, 2, 6);
+		$alphas = range('A', 'Z');
+		$num = max(count($array1), count($array2));
+		for($i = 0; $i < $num; $i++) {
+		    $total = $array1[$i] + $array2[$i];
+		    $array1[$alphas[$i]] = (int) ($array1[$i] / $total * 100);
+		    $array2[$alphas[$i]] = (int) ($array2[$i] / $total * 100);
+		    unset( $array1[$i] );
+		    unset( $array2[$i] );
+		}
+		
+		$chart = $chartsFactory->createChart('chart6');
+		$chart->setTitle('Vertical Stack Chart')->
+		    addSeries($chart->createSeries(\Altamira\ChartDatum\ScalarValueFactory::getFromAssociativeArray( $array1 ), 'Is'))->
+		    addSeries($chart->createSeries(\Altamira\ChartDatum\ScalarValueFactory::getFromAssociativeArray( $array2 ), 'Is Not'))->
+		    setType('Bar', array( 'stackSeries' => true ) );
+		$charts[] = $chart;
+		
+		$arr1 = array( "SF" => 50, "Oakland" => 75, "Marin" => 2, "Millbrae" => 10, "San Bruno" => 5 );
+		$arr2 = array( "SF" => 15, "Oakland" => 125, "Marin" => 12, "Millbrae" => 4, "San Bruno" => 12 );
+		$chart = $chartsFactory->createChart('chart7');
+		$chart->setType( "Bar" )->setTitle( 'Another Bar Chart' );
+		$chart->addSeries( $chart->createSeries( \Altamira\ChartDatum\ScalarValueFactory::getFromAssociativeArray( $arr1 ), 'Players' ) )
+		      ->addSeries( $chart->createSeries( \Altamira\ChartDatum\ScalarValueFactory::getFromAssociativeArray( $arr2 ), 'Hustlers' ) );
+		$charts[] = $chart;
+		
+		$chart = $chartsFactory->createChart('chart8');
+		$chart->setTitle( 'Line Chart With Zooming' );
+		$chart->addSeries( 
+		        $chart->createSeries( 
+		                \Altamira\ChartDatum\TwoDimensionalPointFactory::getFromNested( 
+		                        array_map( function($x) { return array( $x, $x*$x ); }, range( 0, 100 ) ) 
+		                        ), 
+		                'Whatever' 
+		                ) 
+		        )
+		       ->useZooming();
+		$charts[] = $chart;
+
+        $chartIterator = $chartsFactory->getChartIterator($charts);
+
+        $altamiraJSLibraries=$chartIterator->getLibraries();
+        $altamiraCSS=implode(',', $chartIterator->getCSSPaths());
+        $altamiraJSScript=$chartIterator->getScripts();
+        $altamiraPlugins=$chartIterator->getPlugins();
+
+        while ($chartIterator->valid() ) {
+            $altamiraCharts[]=$chartIterator->current()->getDiv();
+            $chartIterator->next();
+        }
+
+        return $this->render('MalwarebytesAltamiraBundle:Default:example.html.twig', array('altamiraJSLibraries'=> $altamiraJSLibraries, 'altamiraCSS'=> $altamiraCSS, 'altamiraScripts' =>  $altamiraJSScript, 'altamiraCharts' => $altamiraCharts, 'altamiraJSPlugins' => $altamiraPlugins));
+    }
+
 
 
     private function sampleChartGenerator($library=null) {
@@ -74,7 +188,7 @@ class ExampleController extends Controller
             setLabelSetting('location', 'w')->
             setLabelSetting('xpadding', 8)->
             setLabelSetting('ypadding', 8);
-        $charts[1]->addSeries($series)->setTitle('Line Chart With Highlights and Labels')->useDates()->useHighlighting();
+        $charts[1]->setTitle('Line Chart With Highlights and Labels')->addSeries($series)->useDates()->useHighlighting();
 
 
         $seriesA = $charts[2]->createSeries( TwoDimensionalPointFactory::getFromYValues( array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) ), 'First' );
@@ -187,7 +301,7 @@ class ExampleController extends Controller
         $chartIterator = $chartsFactory->getChartIterator($charts);
 
         $altamiraJSLibraries=$chartIterator->getLibraries();
-        $altamiraCSS=$chartIterator->getCSSPath();
+        $altamiraCSS=implode(',', $chartIterator->getCSSPaths());
         $altamiraJSScript=$chartIterator->getScripts();
         $altamiraPlugins=$chartIterator->getPlugins();
 
