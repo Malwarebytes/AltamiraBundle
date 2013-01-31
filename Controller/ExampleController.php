@@ -34,6 +34,40 @@ class ExampleController extends Controller
         return $this->sampleChartGenerator("jqPlot");
     }
 
+    public function d3Action() 
+    {
+    	   return $this->d3SampleGenerator();
+    }
+
+    protected function d3SampleGenerator()
+    {
+	$chartsFactory = $this->get('charts_factory');
+	$chartsFactory->setLibrary( 'd3' );
+
+	\Altamira\ChartRenderer::pushRenderer( '\Altamira\ChartRenderer\SVGRenderer' );
+	\Altamira\ChartRenderer::pushRenderer( '\Altamira\ChartRenderer\DefaultRenderer' );
+
+	$charts = array();
+
+	$chart = $chartsFactory->createChart('chart1');
+	$chart->addSeries( $chart->createSeries( \Altamira\ChartDatum\TwoDimensionalPointFactory::getFromXValues( array( 1, 2, 3, 4, 5 ) ), 'Series A' ) );
+	$charts[] = $chart;
+
+        $chartIterator = $chartsFactory->getChartIterator($charts);
+
+        $altamiraJSLibraries=$chartIterator->getLibraries();
+        $altamiraCSS=implode(',', $chartIterator->getCSSPaths());
+        $altamiraJSScript=$chartIterator->getScripts();
+        $altamiraPlugins=$chartIterator->getPlugins();
+
+        while ($chartIterator->valid() ) {
+            $altamiraCharts[]=$chartIterator->current()->getDiv();
+            $chartIterator->next();
+        }
+
+        return $this->render('MalwarebytesAltamiraBundle:Default:example.html.twig', array('altamiraJSLibraries'=> $altamiraJSLibraries, 'altamiraCSS'=> $altamiraCSS, 'altamiraScripts' =>  $altamiraJSScript, 'altamiraCharts' => $altamiraCharts, 'altamiraJSPlugins' => $altamiraPlugins));
+    }
+
 
 
     private function sampleChartGenerator($library=null) {
@@ -74,7 +108,7 @@ class ExampleController extends Controller
             setLabelSetting('location', 'w')->
             setLabelSetting('xpadding', 8)->
             setLabelSetting('ypadding', 8);
-        $charts[1]->addSeries($series)->setTitle('Line Chart With Highlights and Labels')->useDates()->useHighlighting();
+        $charts[1]->setTitle('Line Chart With Highlights and Labels')->addSeries($series)->useDates()->useHighlighting();
 
 
         $seriesA = $charts[2]->createSeries( TwoDimensionalPointFactory::getFromYValues( array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10) ), 'First' );
@@ -187,7 +221,7 @@ class ExampleController extends Controller
         $chartIterator = $chartsFactory->getChartIterator($charts);
 
         $altamiraJSLibraries=$chartIterator->getLibraries();
-        $altamiraCSS=$chartIterator->getCSSPath();
+        $altamiraCSS=implode(',', $chartIterator->getCSSPaths());
         $altamiraJSScript=$chartIterator->getScripts();
         $altamiraPlugins=$chartIterator->getPlugins();
 
