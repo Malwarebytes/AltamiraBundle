@@ -9,3 +9,11 @@ malwarebytes_altamira_flot_library_example:
 malwarebytes_altamira_jqplot_library_example:
     pattern:  /jqplot
     defaults: { _controller: MalwarebytesAltamiraBundle:Example:jqplot }
+
+malwarebytes_altamira_d3_library_example:
+    pattern:  /d3
+    defaults: { _controller: MalwarebytesAltamiraBundle:Example:d3 }
+
+malwarebytes_altamira_ajax_example:
+    pattern:  /ajax
+    defaults: { _controller: MalwarebytesAltamiraBundle:Example:ajax }

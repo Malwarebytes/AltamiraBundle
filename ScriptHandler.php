@@ -111,6 +111,18 @@ class ScriptHandler
         echo "Installing flot-bubbles\n";
         mkdir(static::getJSDir().DIRECTORY_SEPARATOR."flot-bubbles",0777,true);
         recursiveAssetsOnlyCopy(static::getLibsDir().DIRECTORY_SEPARATOR."flot-bubbles",static::getJSDir().DIRECTORY_SEPARATOR."flot-bubbles");
+
+	echo "Installing NVD3\n";
+	mkdir(static::getJSDir().DIRECTORY_SEPARATOR."nvd3",0777,true);
+	recursiveAssetsOnlyCopy(static::getLibsDir().DIRECTORY_SEPARATOR."nvd3",static::getJSDir().DIRECTORY_SEPARATOR."nvd3");
+
+	echo "Installing D3\n";
+	mkdir(static::getJSDir().DIRECTORY_SEPARATOR."d3",0777,true);
+	recursiveAssetsOnlyCopy(static::getLibsDir().DIRECTORY_SEPARATOR."d3",static::getJSDir().DIRECTORY_SEPARATOR."d3");
+	
+	echo "Installing helper scripts\n";
+	copy(static::getLibsDir().DIRECTORY_SEPARATOR.'ajax-chart.js', static::getJSDir().DIRECTORY_SEPARATOR."ajax-chart.js");
+	
     }
 
     public static function gitSubmodulesUpdate() {
