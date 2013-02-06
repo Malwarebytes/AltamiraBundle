@@ -5,11 +5,21 @@
 <body>
 
 {% for chart in altamiraCharts %}
-
+<div class="ajax-chart-wrapper">
 {{ chart|raw }}
-
+{% if ajaxRoute %}
+<label>Enter JSON for a test series:</label><br/>
+<textarea cols=80>[{"data":[[1,2],[3,4],[5,6]],"label":"My Series Label"}, {"data":[3, 4, 5, 6], "label":"Next series label"}]</textarea><br/>
+<button class="ajax-chart-action">Submit</button>
+{% endif %}
+</div>
 {% endfor %}
 
 {{ altamiraScripts|raw }}
+{% if ajaxRoute %}
+<script type="text/javascript">
+var ajaxurl = "{{ajaxRoute}}";
+</script>
+{% endif %}
 </body>
 </html>

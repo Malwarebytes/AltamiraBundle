@@ -4,6 +4,8 @@ namespace Malwarebytes\AltamiraBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use \Altamira\ChartDatum\TwoDimensionalPointFactory;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Displays an example of all the possible charts available
@@ -36,10 +38,24 @@ class ExampleController extends Controller
 
     public function d3Action() 
     {
-    	   return $this->d3SampleGenerator();
+        return $this->d3SampleGenerator();
+    }
+    
+    public function ajaxAction( Request $request )
+    {
+        $factory = $this->get('charts_factory');
+        $factory->setLibrary($request->request->get('library'));
+        $chart = $factory->createChart( $request->request->get('name') );
+        if ($type = $request->request->get('type')) {
+            $chart->setType($type);
+        }
+        foreach (json_decode($request->request->get('series'), true) as $series) {
+            $chart->addSeries($chart->createSeries($series['data'], $series['label']));
+        } 
+        return new Response($chart->getScript(),200,array('Content-Type'=>'application/json'));//make sure it has the correct content type
     }
 
-    protected function d3SampleGenerator()
+    private function d3SampleGenerator()
     {
 		$chartsFactory = $this->get('charts_factory');
 		$chartsFactory->setLibrary( 'd3' );
@@ -147,8 +163,6 @@ class ExampleController extends Controller
 
         return $this->render('MalwarebytesAltamiraBundle:Default:example.html.twig', array('altamiraJSLibraries'=> $altamiraJSLibraries, 'altamiraCSS'=> $altamiraCSS, 'altamiraScripts' =>  $altamiraJSScript, 'altamiraCharts' => $altamiraCharts, 'altamiraJSPlugins' => $altamiraPlugins));
     }
-
-
 
     private function sampleChartGenerator($library=null) {
         $chartsFactory=$this->get('charts_factory');
@@ -310,8 +324,10 @@ class ExampleController extends Controller
             $chartIterator->next();
         }
 
+        $altamiraJSLibraries[] = 'js/ajax-chart.js';
+        $ajaxRoute = '/symtest/web/app_dev.php/chart_demo/ajax'; //@todo figure this out
 
         //print_r($charts);
-        return $this->render('MalwarebytesAltamiraBundle:Default:example.html.twig', array('altamiraJSLibraries'=> $altamiraJSLibraries, 'altamiraCSS'=> $altamiraCSS, 'altamiraScripts' =>  $altamiraJSScript, 'altamiraCharts' => $altamiraCharts, 'altamiraJSPlugins' => $altamiraPlugins));
+        return $this->render('MalwarebytesAltamiraBundle:Default:example.html.twig', array('altamiraJSLibraries'=> $altamiraJSLibraries, 'altamiraCSS'=> $altamiraCSS, 'altamiraScripts' =>  $altamiraJSScript, 'altamiraCharts' => $altamiraCharts, 'altamiraJSPlugins' => $altamiraPlugins, 'ajaxRoute' => $ajaxRoute));
     }
 }
